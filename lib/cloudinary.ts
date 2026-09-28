@@ -10,7 +10,9 @@
 //    EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME=tu_cloud_name
 //    EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET=antojai_unsigned
 
-const CLOUD_NAME = process.env.EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME as string;
+import { Platform } from 'react-native';
+
+const CLOUD_NAME =process.env.EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME as string;
 const UPLOAD_PRESET = process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET as string;
 
 export type CloudinaryUploadResult = {
@@ -37,8 +39,14 @@ export async function uploadImageToCloudinary(
   const type = match ? `image/${match[1] === 'jpg' ? 'jpeg' : match[1]}` : 'image/jpeg';
 
   const formData = new FormData();
-  // @ts-expect-error React Native's FormData accepts this file-like shape
-  formData.append('file', { uri: localUri, name: filename, type });
+  if (Platform.OS === 'web') {
+    // En web el FormData necesita un Blob real, no el objeto {uri, name, type}.
+    const blob = await (await fetch(localUri)).blob();
+    formData.append('file', blob, filename);
+  } else {
+    // @ts-expect-error React Native's FormData accepts this file-like shape
+    formData.append('file', { uri: localUri, name: filename, type });
+  }
   formData.append('upload_preset', UPLOAD_PRESET);
   formData.append('folder', `antojai/${folder}`);
 

@@ -77,7 +77,10 @@ export default function Checkout() {
         quantity: i.quantity,
       }));
       const { error: itemsError } = await supabase.from('order_items').insert(itemsPayload);
-      if (itemsError) throw itemsError;
+      if (itemsError) {
+        await supabase.from('orders').update({ status: 'cancelado' }).eq('id', order.id);
+        throw itemsError;
+      }
 
       if (paymentMethod === 'nequi' && proofUri) {
         const uploaded = await uploadImageToCloudinary(proofUri, 'payment-proofs');

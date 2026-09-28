@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { AuthProvider } from '../context/AuthContext';
 import { CartProvider } from '../context/CartContext';
 import { COLORS } from '../constants/theme';
+import '../lib/webAlert';
 
 export default function RootLayout() {
   return (

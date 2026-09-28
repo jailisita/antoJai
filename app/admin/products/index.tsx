@@ -106,7 +106,7 @@ export default function AdminProducts() {
             )}
             <View style={{ flex: 1, marginLeft: 12 }}>
               <Text numberOfLines={1} style={styles.name}>{item.name}</Text>
-              <Text style={styles.price}>{formatCOP(item.price)}</Text>
+              <Text style={styles.price}>{formatCOP(item.price)} · Stock: {item.stock ?? 0}</Text>
               {catName(item.category_id) && <Text style={styles.cat}>{catName(item.category_id)}</Text>}
             </View>
             <View style={{ alignItems: 'center' }}>

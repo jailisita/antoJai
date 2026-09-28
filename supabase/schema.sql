@@ -47,6 +47,7 @@ create table public.products (
   extra_info text,
   price numeric(12,2) not null check (price >= 0),
   is_available boolean not null default true,
+  stock integer not null default 0 check (stock >= 0),
   category_id uuid references public.categories(id) on delete set null,
   image_url text,
   image_public_id text,
@@ -158,3 +159,5 @@ create policy "order_items: owner insert" on public.order_items for insert with 
 -- update public.profiles set role = 'admin'
 -- where id = (select id from auth.users where email = 'tu-correo@ejemplo.com');
 -- =========================================================
+
+-- Stock: descuento automatico al vender. Ver supabase/stock.sql (triggers).

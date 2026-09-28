@@ -7,7 +7,9 @@ import { COLORS, RADIUS, SHADOW } from '../constants/theme';
 import { formatCOP } from '../lib/format';
 
 export default function ProductCard({ product }: { product: Product }) {
-  const { addItem } = useCart();
+  const { addItem, items } = useCart();
+  const available = product.is_available && product.stock > 0;
+  const inCart = items.find((i) => i.product.id === product.id)?.quantity ?? 0;
   return (
     <Pressable
       style={({ pressed }) => [styles.card, SHADOW, pressed && { opacity: 0.92 }]}
@@ -21,7 +23,7 @@ export default function ProductCard({ product }: { product: Product }) {
             <Ionicons name="fast-food-outline" size={34} color={COLORS.accent} />
           </View>
         )}
-        {!product.is_available && (
+        {!available && (
           <View style={styles.soldOut}>
             <Text style={styles.soldOutText}>Agotado</Text>
           </View>
@@ -30,7 +32,7 @@ export default function ProductCard({ product }: { product: Product }) {
       <Text numberOfLines={2} style={styles.name}>{product.name}</Text>
       <View style={styles.bottom}>
         <Text style={styles.price}>{formatCOP(product.price)}</Text>
-        {product.is_available && (
+        {available && inCart < product.stock && (
           <Pressable style={styles.addBtn} hitSlop={6} onPress={() => addItem(product)}>
             <Ionicons name="add" size={20} color="#fff" />
           </Pressable>

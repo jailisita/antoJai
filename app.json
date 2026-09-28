@@ -6,15 +6,33 @@
     "orientation": "portrait",
     "scheme": "antojai",
     "userInterfaceStyle": "light",
-    "splash": { "backgroundColor": "#B91C1C" },
-    "assetBundlePatterns": ["**/*"],
-    "ios": { "supportsTablet": true, "bundleIdentifier": "com.antojai.app" },
+    "splash": {
+      "backgroundColor": "#B91C1C"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.antojai.app"
+    },
     "android": {
       "package": "com.antojai.app",
-      "adaptiveIcon": { "backgroundColor": "#B91C1C" }
+      "adaptiveIcon": {
+        "backgroundColor": "#B91C1C"
+      }
     },
-    "web": { "bundler": "metro" },
-    "plugins": ["expo-router"],
-    "extra": { "router": { "origin": false } }
+    "web": {
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font"
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      }
+    }
   }
 }

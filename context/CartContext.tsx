@@ -37,13 +37,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const addItem = (product: Product, quantity = 1) => {
     setItems((prev) => {
+      const max = product.stock ?? Infinity;
       const existing = prev.find((i) => i.product.id === product.id);
       if (existing) {
         return prev.map((i) =>
-          i.product.id === product.id ? { ...i, quantity: i.quantity + quantity } : i
+          i.product.id === product.id ? { ...i, product, quantity: Math.min(i.quantity + quantity, max) } : i
         );
       }
-      return [...prev, { product, quantity }];
+      return [...prev, { product, quantity: Math.min(quantity, max) }];
     });
   };
 
@@ -53,7 +54,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const setQuantity = (productId: string, quantity: number) => {
     if (quantity <= 0) return removeItem(productId);
-    setItems((prev) => prev.map((i) => (i.product.id === productId ? { ...i, quantity } : i)));
+    setItems((prev) =>
+      prev.map((i) => (i.product.id === productId ? { ...i, quantity: Math.min(quantity, i.product.stock ?? Infinity) } : i))
+    );
   };
 
   const clear = () => setItems([]);

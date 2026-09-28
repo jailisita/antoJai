@@ -32,8 +32,12 @@ export default function Profile() {
         )}
       </View>
 
-      <PrimaryButton title="Mis pedidos" variant="outline" icon="receipt-outline" onPress={() => router.push('/orders')} />
-      <View style={{ height: 12 }} />
+      {!isAdmin && (
+        <>
+          <PrimaryButton title="Mis pedidos" variant="outline" icon="receipt-outline" onPress={() => router.push('/orders')} />
+          <View style={{ height: 12 }} />
+        </>
+      )}
       {isAdmin && (
         <>
           <PrimaryButton title="Panel de administración" variant="dark" icon="sparkles" onPress={() => router.push('/admin')} />

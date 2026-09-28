@@ -16,6 +16,7 @@ export default function ProductForm({ product }: { product?: Product }) {
   const [description, setDescription] = useState(product?.description ?? '');
   const [extraInfo, setExtraInfo] = useState(product?.extra_info ?? '');
   const [price, setPrice] = useState(product ? String(product.price) : '');
+  const [stock, setStock] = useState(product ? String(product.stock ?? 0) : '');
   const [categoryId, setCategoryId] = useState<string | null>(product?.category_id ?? null);
   const [isAvailable, setIsAvailable] = useState(product?.is_available ?? true);
   const [imageUri, setImageUri] = useState<string | null>(product?.image_url ?? null);
@@ -46,6 +47,7 @@ export default function ProductForm({ product }: { product?: Product }) {
     const priceNum = Number(price.replace(/[^\d]/g, ''));
     if (!name.trim()) return Alert.alert('Ponle un nombre al producto');
     if (!price.trim() || isNaN(priceNum) || priceNum < 0) return Alert.alert('Ingresa un precio válido');
+    const stockNum = Number(stock.replace(/[^\d]/g, '') || 0);
 
     setSaving(true);
     try {
@@ -66,7 +68,8 @@ export default function ProductForm({ product }: { product?: Product }) {
         extra_info: extraInfo.trim() || null,
         price: priceNum,
         category_id: categoryId,
-        is_available: isAvailable,
+        stock: stockNum,
+        is_available: isAvailable && stockNum > 0,
         image_url: imageUrl,
         image_public_id: imagePublicId,
       };
@@ -134,6 +137,13 @@ export default function ProductForm({ product }: { product?: Product }) {
           placeholder="3000"
         />
         <Field
+          label="Stock (unidades disponibles)"
+          value={stock}
+          onChangeText={(t) => setStock(t.replace(/[^\d]/g, ''))}
+          keyboardType="numeric"
+          placeholder="20"
+        />
+        <Field
           label="Descripción"
           value={description}
           onChangeText={setDescription}
@@ -168,7 +178,7 @@ export default function ProductForm({ product }: { product?: Product }) {
         <View style={styles.switchRow}>
           <View style={{ flex: 1, paddingRight: 10 }}>
             <Text style={[styles.label, { marginBottom: 0 }]}>Disponible hoy</Text>
-            <Text style={styles.muted}>Si lo apagas, se muestra como agotado.</Text>
+            <Text style={styles.muted}>Si lo apagas o el stock es 0, se muestra como agotado.</Text>
           </View>
           <Switch
             value={isAvailable}

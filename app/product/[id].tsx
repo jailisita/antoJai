@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Dimensions, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../lib/supabase';
@@ -8,8 +8,6 @@ import PrimaryButton from '../../components/PrimaryButton';
 import { useCart } from '../../context/CartContext';
 import { COLORS, RADIUS } from '../../constants/theme';
 import { formatCOP } from '../../lib/format';
-
-const { width } = Dimensions.get('window');
 
 export default function ProductDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -31,12 +29,14 @@ export default function ProductDetail() {
 
   if (!product) return <View style={styles.container} />;
 
+  const available = product.is_available && product.stock > 0;
+
   return (
     <View style={styles.container}>
       <Stack.Screen options={{ title: '', headerTransparent: true }} />
       <ScrollView>
         {product.image_url ? (
-          <Image source={{ uri: product.image_url }} style={styles.image} />
+          <Image source={{ uri: product.image_url }} style={styles.image} resizeMode="cover" />
         ) : (
           <View style={[styles.image, styles.placeholder]}>
             <Ionicons name="fast-food-outline" size={64} color={COLORS.accent} />
@@ -49,9 +49,9 @@ export default function ProductDetail() {
                 <Text style={styles.pillText}>{category.name}</Text>
               </View>
             )}
-            <View style={[styles.pill, { backgroundColor: product.is_available ? '#DCFCE7' : '#FEE2E2' }]}>
-              <Text style={[styles.pillText, { color: product.is_available ? COLORS.success : COLORS.danger }]}>
-                {product.is_available ? 'Disponible hoy' : 'Agotado por ahora'}
+            <View style={[styles.pill, { backgroundColor: available ? '#DCFCE7' : '#FEE2E2' }]}>
+              <Text style={[styles.pillText, { color: available ? COLORS.success : COLORS.danger }]}>
+                {available ? `Disponible · quedan ${product.stock}` : 'Agotado por ahora'}
               </Text>
             </View>
           </View>
@@ -73,7 +73,7 @@ export default function ProductDetail() {
             title={added ? 'Agregado ✓' : 'Al carrito'}
             variant="outline"
             icon="bag-add-outline"
-            disabled={!product.is_available}
+            disabled={!available}
             onPress={() => {
               addItem(product);
               setAdded(true);
@@ -84,7 +84,7 @@ export default function ProductDetail() {
         <View style={{ flex: 1 }}>
           <PrimaryButton
             title="Pedir ahora"
-            disabled={!product.is_available}
+            disabled={!available}
             onPress={() => {
               addItem(product);
               router.push('/checkout');
@@ -98,7 +98,7 @@ export default function ProductDetail() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg },
-  image: { width, height: width * 0.9 },
+  image: { width: '100%', aspectRatio: 1, maxHeight: 380, backgroundColor: COLORS.soft },
   placeholder: { backgroundColor: COLORS.soft, alignItems: 'center', justifyContent: 'center' },
   body: {
     padding: 20,
