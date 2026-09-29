@@ -8,7 +8,7 @@ App de pedidos para un puesto de fritos, construida con **Expo + React Native + 
 - Las **fotos de productos, el QR de pago y los comprobantes** se suben directo a **Cloudinary** (no ocupa espacio de tu base de datos y es gratis hasta un límite generoso).
 - El cliente puede pagar por **Nequi / llave Bre-B** (sube el pantallazo del pago) o **efectivo contra entrega**, según lo que tú definas.
 
----
+---dsd
 
 ## 1. Requisitos
 
@@ -148,16 +148,51 @@ types/                  Tipos de TypeScript
 supabase/schema.sql     Script SQL completo (tablas + seguridad)
 ```
 
-## 10. Publicar la app de verdad
+## 10. Generar el APK con EAS Build
 
-Cuando quieras subirla a Play Store / App Store, usa **EAS Build** de Expo:
+El repo ya incluye `eas.json` con tres perfiles:
+
+| Perfil | Formato | Para qué sirve |
+| --- | --- | --- |
+| `development` | APK | Build con development client, para depurar |
+| `preview` | APK | **Instalar directo en el celular** ( testing ) |
+| `production` | AAB | Subir a Google Play |
+
+### 10.1 Preparar el repositorio
 
 ```bash
-npm install -g eas-cli
-eas login
-eas build:configure
-eas build --platform android
-eas build --platform ios
+git add app.json eas.json
+git commit -m "chore: config EAS build (perfil preview APK, versionCode)"
+git push
 ```
 
-(Requiere cuenta gratuita de Expo y, para iOS, cuenta de Apple Developer).
+### 10.2 Variables de entorno (importante)
+
+El archivo `.env` está en `.gitignore`, así que **no viaja a Git** y el build en la nube no lo tendrá. La app necesita estas cuatro variables para funcionar:
+
+```
+EXPO_PUBLIC_SUPABASE_URL
+EXPO_PUBLIC_SUPABASE_ANON_KEY
+EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME
+EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET
+```
+
+Agrégalas en [expo.dev](https://expo.dev) → tu proyecto → **Environment variables**. Si no lo haces, el APK instala pero no conecta con Supabase ni sube fotos.
+
+### 10.3 Crear el build desde Git
+
+1. Entra a [expo.dev/projects](https://expo.dev/projects) y abre el proyecto.
+2. Pestaña **Builds → Create a build**.
+3. Platform: **Android**, Profile: **preview**.
+4. **Create build**. Expo clona el repo y compila en la nube.
+5. Al terminar, descarga el `.apk` desde el build.
+
+Desde la terminal también funciona (usa el commit local):
+
+```bash
+npx eas-cli build --platform android --profile preview
+```
+
+### 10.4 Subir a Google Play
+
+El perfil `production` genera un `.aab` y sube el `versionCode` automáticamente (`autoIncrement`). Necesitas una cuenta de developer en Google Play ($25 única vez). Para iOS hace falta cuenta de Apple Developer.
